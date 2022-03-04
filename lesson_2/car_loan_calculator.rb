@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 def prompt(message)
   puts "=> #{message}"
 end
@@ -16,43 +14,51 @@ def valid_number?(num)
   integer?(num) || float?(num)
 end
 
-def valid_apr?(apr)
-  apr.to_i.positive? && valid_number?(apr)
+def valid_amount?(amount)
+  valid_number?(amount) && amount.to_i.positive?
 end
 
-def input_loan_amount
+def valid_apr?(apr)
+  valid_number?(apr) && apr.to_i >= 0
+end
+
+def input_principle
   prompt('Please enter loan amount:')
-  loan_amount = ''
+  principle = ''
 
   loop do
-    loan_amount = gets.chomp
-    return loan_amount if valid_number?(loan_amount)
+    principle = gets.chomp
+    return principle if valid_amount?(principle)
 
-    prompt('Invalid input! Please only enter a number')
+    prompt('Invalid input! Please only enter a positive number.')
   end
 end
 
 def input_apr
-  prompt('Please enter Annual Percentage Rate (APR). (e.g 5 for 5%, 7.5 for 7.5%):')
+  prompt('Please enter Annual Percentage Rate (APR):')
+  prompt('Enter 5 for 5% or 7.5 for 7.5%)')
   apr = ''
   loop do
     apr = gets.chomp
     return apr if valid_apr?(apr)
 
-    prompt('Invalid APR! Please enter Annual Percentage Rate (APR) as a full number. (enter 5 for 5% or 7.5 for 7.5%)')
+    prompt('Invalid APR! Please enter APR as a full number.')
+    prompt('Enter 5 for 5% or 7.5 for 7.5%)')
   end
 end
 
-def input_loan_duration
-  prompt('Please enter loan duration in years:')
-  loan_duration_years = ''
+def input_term
+  prompt('Please enter loan term in years:')
+  term_years = ''
   loop do
-    loan_duration_years = gets.chomp
-    return loan_duration_years if valid_number?(loan_duration_years)
+    term_years = gets.chomp
+    return term_years if valid_amount?(term_years)
+
+    prompt('Invalid input! Please only enter a positive number.')
   end
 end
 
-def payment_calculator(amount, interest, duration)
+def payment_calc(amount, interest, duration)
   amount * (interest / (1 - (1 + interest)**-duration))
 end
 
@@ -65,18 +71,18 @@ puts <<-WELCOME
 WELCOME
 
 loop do
-  loan_amount = input_loan_amount
+  principle = input_principle
   apr = input_apr
-  loan_duration_years = input_loan_duration
+  term_years = input_term
 
-  monthly_intererst_rate = apr.to_f / 12 / 100
-  loan_duration_months = loan_duration_years.to_f * 12
+  monthly_int_rate = apr.to_f / 12 / 100
+  term_months = term_years.to_f * 12
 
-  monthly_payment = payment_calculator(loan_amount.to_f, monthly_intererst_rate, loan_duration_months)
+  monthly_payment = payment_calc(principle.to_f, monthly_int_rate, term_months)
 
   puts <<-RESULT
     Based on the provided information:
-    You will pay $#{monthly_payment.round(2)} per month for #{loan_duration_years} years.
+    You will pay $#{format('%.2f', monthly_payment)} per month for #{term_years} years.
 
   RESULT
 
