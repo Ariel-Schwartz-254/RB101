@@ -131,9 +131,9 @@ display_welcome_msg
 loop do
   player_score = 0
   computer_score = 0
-  display_scoreboard(player_score, computer_score)
 
   loop do
+    display_scoreboard(player_score, computer_score)
     player_choice = validate_input()
     computer_choice = VALID_CHOICES.sample
 
@@ -141,7 +141,7 @@ loop do
     display_choices(player_choice, computer_choice)
 
     winner = evaluate_round(player_choice, computer_choice)
-    display_round_result(result)
+    display_round_result(winner)
 
     player_score += 1 if winner == 'Player'
     computer_score += 1 if winner == 'Computer'
