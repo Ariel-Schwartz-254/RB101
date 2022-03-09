@@ -1,19 +1,23 @@
-VALID_CHOICES = ['Rock', 'Paper', 'Scissors', 'Lizard', 'Spock']
-WIN_RULES = { Rock: ['Scissors', 'Lizard'],
-              Paper: ['Rock', 'Spock'],
-              Scissors: ['Paper', 'Lizard'],
-              Lizard: ['Spock', 'Paper'],
-              Spock: ['Scissors', 'Rock'] }
+GAME_COMPONANTS = { shortcuts: {  Rock: 'R',
+                                  Paper: 'P',
+                                  Scissors: 'Sc',
+                                  Lizard: 'L',
+                                  Spock: 'Sp' },
+                    win_rules: {  Rock: ['Scissors', 'Lizard'],
+                                  Paper: ['Rock', 'Spock'],
+                                  Scissors: ['Paper', 'Lizard'],
+                                  Lizard: ['Spock', 'Paper'],
+                                  Spock: ['Scissors', 'Rock'] } }
 
 def prompt(message)
-  Kernel.puts("=> #{message}")
+  puts("=> #{message}")
 end
 
 def display_welcome_msg
   puts <<-MSG
 
     ------------------------------------------------
-    Welcome to #{VALID_CHOICES.join(', ')}!
+    Welcome to #{GAME_COMPONANTS[:shortcuts].keys.join(', ')}!
     ------------------------------------------------
 
   MSG
@@ -31,39 +35,30 @@ def display_input_request
 end
 
 def convert_if_shortcut(input)
-  if input.length <= 2
+  if valid_shortcut?(input)
     convert_shortcut(input)
   else
     input
   end
 end
 
-def valid_input?(input)
-  VALID_CHOICES.include?(input)
+def valid_shortcut?(shortcut)
+  GAME_COMPONANTS[:shortcuts].values.include?(shortcut)
 end
 
 def convert_shortcut(string)
-  case string
-  when 'R'
-    'Rock'
-  when 'P'
-    'Paper'
-  when 'Sc'
-    'Scissors'
-  when 'L'
-    'Lizard'
-  when 'Sp'
-    'Spock'
-  else
-    string
-  end
+  GAME_COMPONANTS[:shortcuts].key(string).to_s
+end
+
+def valid_input?(input)
+  GAME_COMPONANTS[:shortcuts].keys.include?(input.to_sym)
 end
 
 def validate_input
   input = ''
   loop do
     display_input_request()
-    input = Kernel.gets().chomp().capitalize()
+    input = gets().chomp().capitalize()
     input = convert_if_shortcut(input)
 
     break if valid_input?(input)
@@ -82,7 +77,7 @@ def display_choices(player, computer)
 end
 
 def win_round?(first, second)
-  WIN_RULES[first.to_sym].include?(second)
+  GAME_COMPONANTS[:win_rules][first.to_sym].include?(second)
 end
 
 def evaluate_round(player, computer)
@@ -95,30 +90,32 @@ def evaluate_round(player, computer)
   end
 end
 
-def display_round_result(result)
-  case result
+def display_round_result(winner)
+  case winner
   when "Player"
-    prompt("Player's round")
+    prompt("Player wins the round")
   when "Computer"
-    prompt("Computer's round")
+    prompt("Computer wins the round")
   else
     prompt("It's a tie!")
   end
 end
 
-def display_scoreboard(player, computer)
+def display_scoreboard(player_score, computer_score)
   puts <<-SCOREBOARD
      
+    First to 3 points is the winner:
+
       Player  | Computer
      -------------------
-    |    #{player}    |    #{computer}    |
+    |    #{player_score}    |    #{computer_score}    |
      -------------------
 
   SCOREBOARD
 end
 
-def win_check?(player, computer)
-  player == 3 || computer == 3
+def win_check?(player_score, computer_score)
+  player_score == 3 || computer_score == 3
 end
 
 def display_winner(player, computer)
@@ -135,9 +132,9 @@ loop do
   loop do
     display_scoreboard(player_score, computer_score)
     player_choice = validate_input()
-    computer_choice = VALID_CHOICES.sample
+    computer_choice = GAME_COMPONANTS[:shortcuts].keys.sample.to_s
 
-    prompt("#{VALID_CHOICES.join(' ')}!")
+    prompt("#{GAME_COMPONANTS[:shortcuts].keys.join(' ')}!")
     display_choices(player_choice, computer_choice)
 
     winner = evaluate_round(player_choice, computer_choice)
@@ -154,19 +151,22 @@ loop do
       break
     end
 
-    loop do
-      prompt("Ready for the next round? (Press Enter to continue)")
-      Kernel.gets().chomp()
-      break
+    prompt("Ready for the next round?")
+    Time.new
+    5.downto(1) do |i|
+      puts i
+      sleep 2
     end
 
     system "clear"
   end
 
   prompt("Would you like to play again?")
-  answer = Kernel.gets().chomp()
+  answer = gets().chomp()
   break unless answer.downcase.start_with?('y')
+
+  system "clear"
 end
 
-prompt("Thank you for playing #{VALID_CHOICES.join(', ')}.")
+prompt("Thank you for playing #{GAME_COMPONANTS[:shortcuts].keys.join(', ')}.")
 prompt("Live long, and prosper!")
