@@ -69,9 +69,10 @@ end
 
 def display_choices(player, computer)
   puts <<-MSG
-     Player           Computer
-    --------        ------------
-    #{player}            #{computer}
+       Player  | Computer
+     ---------------------
+    |#{player.center(10)}|#{computer.center(10)}|
+     ---------------------
 
   MSG
 end
