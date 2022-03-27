@@ -41,6 +41,12 @@ def display_score(scoreboard, starting_player)
   SCOREBOARD
 end
 
+def display_score_and_board(score, starting_player, brd)
+  system 'clear'
+  display_score(score, starting_player)
+  display_board(brd)
+end
+
 def initialize_board
   new_board = {}
   (1..9).each { |num| new_board[num] = INITIAL_MARKER }
@@ -79,7 +85,7 @@ def select_starting_player
   starting_player
 end
 
-def decode(user_selection)
+def convert_to_str(user_selection)
   case user_selection
   when "1"
     "Player"
@@ -187,23 +193,20 @@ end
 
 loop do
   scoreboard = [0, 0]
-  user_selection = select_starting_player
-  starting_player = decode(user_selection)
+  starting_player = convert_to_str(select_starting_player)
 
   loop do
     board = initialize_board
     current_player = starting_player
     loop do
-      system 'clear'
-      display_score(scoreboard, starting_player)
-      display_board(board)
+      display_score_and_board(scoreboard, starting_player, board)
 
       place_piece!(board, current_player)
       current_player = alternate_player(current_player)
       break if someone_won?(board) || board_full?(board)
     end
 
-    display_board(board)
+    display_score_and_board(scoreboard, starting_player, board)
     if someone_won?(board)
       prompt "#{detect_winner(board)} wins the round!"
       update_score(board, scoreboard)
