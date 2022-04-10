@@ -33,7 +33,7 @@ end
 
 def display_score(scoreboard)
   system 'clear'
-  puts <<-SCOREBOARD
+  puts <<~SCOREBOARD
 
       Player     Dealer
     +---------+---------+
@@ -53,7 +53,7 @@ def deal_starting_cards(player, dealer, deck)
   end
 end
 
-def joinand(arr)
+def join_and(arr)
   new_arr = []
   arr.each { |element| new_arr << element }
   case new_arr.length
@@ -71,21 +71,21 @@ end
 
 def display_hands(player_hand, dealer_hand)
   prompt "Dealer hand: #{dealer_hand.first} and unknown card"
-  prompt "Player hand: #{joinand(player_hand)}"
-  prompt "  TOTAL VALUE: #{total(player_hand)}"
+  prompt "Player hand: #{join_and(player_hand)}"
+  prompt "  TOTAL VALUE: #{calculate_total(player_hand)}"
 end
 
 def display_final_hands(player_hand, dealer_hand)
   puts <<-FINAL_HANDS
     FINAL HANDS
     ===========
-    Dealer hand: #{joinand(dealer_hand)}
+    Dealer hand: #{join_and(dealer_hand)}
     ------------
-      TOTAL VALUE: #{total(dealer_hand)}
+      TOTAL VALUE: #{calculate_total(dealer_hand)}
 
-    Player hand: #{joinand(player_hand)}
+    Player hand: #{join_and(player_hand)}
     ------------
-      TOTAL VALUE: #{total(player_hand)}
+      TOTAL VALUE: #{calculate_total(player_hand)}
   FINAL_HANDS
   sleep 5
 end
@@ -106,7 +106,7 @@ def adjust_aces(sum, hand)
   sum
 end
 
-def total(hand)
+def calculate_total(hand)
   sum = 0
   hand.each do |card|
     sum += value(card)
@@ -136,7 +136,7 @@ def hit_or_stay
 end
 
 def busted?(hand)
-  total(hand) > GAME_LIMIT
+  calculate_total(hand) > GAME_LIMIT
 end
 
 def player_turn(hand, deck)
@@ -149,18 +149,18 @@ def player_turn(hand, deck)
       break
     end
 
-    prompt "Player hand: #{joinand(hand)}"
-    prompt "  Total value: #{total(hand)}"
+    prompt "Player hand: #{join_and(hand)}"
+    prompt "  Total value: #{calculate_total(hand)}"
   end
   system 'clear'
 end
 
 def dealer_turn(hand, deck)
-  while total(hand) < DEALER_LIMIT
+  while calculate_total(hand) < DEALER_LIMIT
     prompt "Dealer hits!"
     hand << deck.pop
-    prompt "Dealer hand: #{joinand(hand)}"
-    prompt "  Total value: #{total(hand)}"
+    prompt "Dealer hand: #{join_and(hand)}"
+    prompt "  Total value: #{calculate_total(hand)}"
     sleep 1
   end
 end
@@ -222,8 +222,8 @@ loop do
         break
       end
 
-      player_total = total(player_hand)
-      dealer_total = total(dealer_hand)
+      player_total = calculate_total(player_hand)
+      dealer_total = calculate_total(dealer_hand)
 
       if player_won?(player_total, dealer_total)
         prompt "Player wins!!!"
